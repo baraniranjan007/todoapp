@@ -13,6 +13,7 @@ exports.getAllTodos = (request, response) => {
                     todoId: doc.id,
                     title: doc.data().title,
 					body: doc.data().body,
+					check: doc.data().check,
 					createdAt: doc.data().createdAt,
 				});
 			});
@@ -54,10 +55,13 @@ exports.postOneTodo = (request, response) => {
     if(request.body.title.trim() === '') {
         return response.status(400).json({ title: 'Must not be empty' });
     }
-
+		if(request.body.check.trim() === '') {
+        return response.status(400).json({ check: 'Must not be empty' });
+    }
     const newTodoItem = {
         title: request.body.title,
         body: request.body.body,
+				check:request.body.check,
 				username: request.user.username,
         createdAt: new Date().toISOString()
     }

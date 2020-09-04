@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import Checkbox from '@material-ui/core/Checkbox';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -7,6 +7,7 @@ import Dialog from '@material-ui/core/Dialog';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
@@ -18,7 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import CardContent from '@material-ui/core/CardContent';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 import MuiDialogContent from '@material-ui/core/DialogContent';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -101,6 +102,7 @@ class todo extends Component {
 			todos: '',
 			title: '',
 			body: '',
+			check:true,
 			todoId: '',
 			errors: [],
 			open: false,
@@ -112,11 +114,17 @@ class todo extends Component {
 		this.deleteTodoHandler = this.deleteTodoHandler.bind(this);
 		this.handleEditClickOpen = this.handleEditClickOpen.bind(this);
 		this.handleViewOpen = this.handleViewOpen.bind(this);
+		this.handleCheck=this.handleCheck.bind(this);
 	}
 
 	handleChange = (event) => {
 		this.setState({
 			[event.target.name]: event.target.value
+		});
+	};
+	handleChang = (event) => {
+		this.setState({
+			[event.target.name]: event.target.checked
 		});
 	};
 
@@ -156,16 +164,22 @@ class todo extends Component {
 		this.setState({
 			title: data.todo.title,
 			body: data.todo.body,
+			check:data.todo.check,
 			todoId: data.todo.todoId,
 			buttonType: 'Edit',
 			open: true
 		});
 	}
-
+	handleCheck(data){
+		this.setState({
+			check:data.todo.check
+		})
+	}
 	handleViewOpen(data) {
 		this.setState({
 			title: data.todo.title,
 			body: data.todo.body,
+			check:data.todo.check,
 			viewOpen: true
 		});
 	}
@@ -200,6 +214,7 @@ class todo extends Component {
 				todoId: '',
 				title: '',
 				body: '',
+				check:true,
 				buttonType: '',
 				open: true
 			});
@@ -210,7 +225,8 @@ class todo extends Component {
 			event.preventDefault();
 			const userTodo = {
 				title: this.state.title,
-				body: this.state.body
+				body: this.state.body,
+				check: this.state.check
 			};
 			let options = {};
 			if (this.state.buttonType === 'Edit') {
@@ -322,6 +338,16 @@ class todo extends Component {
 										value={this.state.body}
 									/>
 								</Grid>
+								<Grid item xs={12}>
+								<FormControlLabel
+        				control={
+								<Checkbox defaultunChecked
+        				color="primary"
+								onChange={this.handleChang}
+								checked={this.state.check}
+								name="check" />}
+								label="Completed" />
+								</Grid>
 							</Grid>
 						</form>
 					</Dialog>
@@ -334,6 +360,11 @@ class todo extends Component {
 										<Typography variant="h5" component="h2">
 											{todo.title}
 										</Typography>
+										<div>
+										{ todo.check ? <Chip label="Completed" />: <Chip label="Not Completed" />
+
+										}
+										</div>
 										<Typography className={classes.pos} color="textSecondary">
 											{dayjs(todo.createdAt).fromNow()}
 										</Typography>
